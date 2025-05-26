@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Romantic Surprise</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(to top right, #ffe6f0, #fff0f5);
+    }
+
+    .screen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      transition: opacity 1.5s ease;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .reveal-button {
+      padding: 16px 30px;
+      font-size: 1.4em;
+      border: none;
+      border-radius: 12px;
+      background-color: #e91e63;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .reveal-button:hover {
+      background-color: #c2185b;
+      transform: scale(1.05);
+    }
+
+    .container {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 2s ease;
+    }
+
+    #heart {
+      position: relative;
+      width: 45vw;
+      height: 60vh;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 28px;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: all 0.8s ease-in-out;
+      animation: pulse 2s infinite;
+      cursor: pointer;
+    }
+
+    .emoji:hover {
+      animation: bounce 0.6s ease-in-out;
+    }
+
+    .emoji.clicked {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.2); }
+    }
+
+    @keyframes bounce {
+      0% { transform: translate(-50%, -50%) scale(1.1); }
+      50% { transform: translate(-50%, -60%) scale(1.3); }
+      100% { transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #message {
+      max-width: 400px;
+      color: #880e4f;
+      font-size: 1.2em;
+      line-height: 1.7;
+      animation: fadeIn 3s ease;
+    }
+
+    #message p {
+      margin-bottom: 20px;
+    }
+
+    audio {
+      display: none;
+    }
+
+    @media (max-width: 800px) {
+      .container {
+        flex-direction: column;
+      }
+      #heart {
+        width: 90vw;
+        height: 45vh;
+      }
+      #message {
+        text-align: center;
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Welcome screen -->
+  <div id="welcomeScreen" class="screen">
+    <h1 style="color:#ad1457; font-size: 2.5em;">💘 Click below for a surprise 💘</h1>
+    <button class="reveal-button" onclick="showSurprise()">Reveal Surprise</button>
+  </div>
+
+  <!-- Romantic Surprise screen -->
+  <div id="surpriseScreen" class="screen hidden">
+    <div class="container">
+      <div id="heart"></div>
+      <div id="message">
+        <p>I love you so much that I always think about what to do to make you feel the same way about me.</p>
+        <p>Every little moment without knowing how you truly feel weighs heavily on me.</p>
+        <p>I try, I wonder, I hope — constantly imagining ways to reach your heart the way you've reached mine.</p>
+        <p>It hurts... because loving you this deeply means my heart is always searching for a reflection of that love in you.</p>
+        <p>But even through the pain, I’d choose to love you again and again. You’re worth every heartbeat. 💖</p>
+      </div>
+    </div>
+    <audio autoplay loop>
+      <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mp3">
+    </audio>
+  </div>
+
+  <script>
+    function showSurprise() {
+      document.getElementById('welcomeScreen').classList.add('hidden');
+      document.getElementById('surpriseScreen').classList.remove('hidden');
+      drawHeart();
+    }
+
+    function drawHeart() {
+      const heart = document.getElementById('heart');
+      const emojis = ['🌸', '💖', '🌹', '💘', '💞'];
+      const heartPoints = [];
+
+      for (let t = 0; t < Math.PI * 2; t += 0.05) {
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+        heartPoints.push({ x, y });
+      }
+
+      const centerX = heart.offsetWidth / 2;
+      const centerY = heart.offsetHeight / 2;
+      const scale = 10;
+
+      heartPoints.forEach((point, index) => {
+        const span = document.createElement('span');
+        span.classList.add('emoji');
+        span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        const x = centerX + point.x * scale;
+        const y = centerY - point.y * scale;
+        span.style.left = `${x}px`;
+        span.style.top = `${y}px`;
+
+        setTimeout(() => {
+          heart.appendChild(span);
+          setTimeout(() => {
+            span.style.opacity = 1;
+          }, 50);
+        }, index * 40);
+
+        span.addEventListener('click', () => {
+          span.classList.add('clicked');
+          setTimeout(() => {
+            span.classList.remove('clicked');
+          }, 1000);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
